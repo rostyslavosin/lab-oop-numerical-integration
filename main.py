@@ -11,7 +11,9 @@ from integrators import (
 
 def target_function(x):
     """Підінтегральна функція згідно з індивідуальним варіантом."""
-    return math.sin(x**4 + 2* x**3 + x**2)
+    if x == 0:
+        return -0.5
+    return (math.cos(x) - 1)/x**2
 
 
 def main():
@@ -30,9 +32,10 @@ def main():
         for integrator in integrators:
             print(integrator)
             result, n_min, err = integrator.adaptive_integrate(eps=eps)
-            print(f"Уточнений результат: {result:.8f}")
-            print(f"Мінімальна кількість розбиттів: {n_min}")
-            print(f"Оцінка похибки: {err:.8e}")
+            print(
+                f"  Уточнений результат: {result:.7f} "
+                f"(n_min = {n_min}, похибка ≈ {err:.2e})\n"
+            )
 
 if __name__ == "__main__":
     main()

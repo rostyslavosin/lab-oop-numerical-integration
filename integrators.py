@@ -38,11 +38,13 @@ class BaseIntegrator:
 
         n = initial_n
         i_h = self.integrate(n)
+        print(f"  n = {n:<4} -> I = {i_h:.7f}")
         divisor = (2 ** self.order) - 1
 
         while True:
             n_next = n*2
             i_h2 = self.integrate(n_next)
+            print(f"  n = {n_next:<4} -> I = {i_h2:.7f}")
             error = abs(i_h2 - i_h) / divisor
 
             if error < eps:
