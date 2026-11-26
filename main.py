@@ -11,9 +11,7 @@ from integrators import (
 
 def target_function(x):
     """Підінтегральна функція згідно з індивідуальним варіантом."""
-    if x == 0:
-        return -0.5
-    return (math.cos(x) - 1)/x**2
+    return math.sin(x**4 + 2* x**3 + x**2)
 
 
 def main():
