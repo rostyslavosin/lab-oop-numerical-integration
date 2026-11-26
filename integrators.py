@@ -67,7 +67,7 @@ class RectangleIntegrator(BaseIntegrator):
     method_name = "Формула прямокутників"
 
     def __init__(self, func, a, b):
-        """Запускає інгератор середніх прямокутників."""
+        """Запускає інтегратор середніх прямокутників."""
         super().__init__(func, a, b)
 
     def integrate(self, n):
@@ -83,24 +83,33 @@ class RectangleIntegrator(BaseIntegrator):
 class TrapezoidIntegrator(BaseIntegrator):
     """Обчислення інтеграла складеною формулою трапецій."""
 
-    order = None
+    order = 2
     method_name = "Формула трапецій"
 
     def __init__(self, func, a, b):
-        pass
+        """Запускає інтегратор трапецій."""
+        super().__init__(func, a, b)
 
     def integrate(self, n):
-        pass
+        """Обчислення інтеграла за формулою трапецій."""
+        if n <= 0 or n % 2 != 0:
+            raise ValueError("Кількість розбиттів n повинна бути додатньою та парною.")
+
+        h = (self.b - self.a) / n
+        endpoints = 0.5 * (self.func(self.a) + self.func(self.b))
+        interior = sum(self.func(self.a + i * h) for i in range(1, n))
+        return h * (endpoints + interior)
 
 
 class SimpsonIntegrator(BaseIntegrator):
     """Обчислення інтеграла складеною формулою Сімпсона."""
 
-    order = None
+    order = 2
     method_name = "Формула Сімпсона"
 
     def __init__(self, func, a, b):
-        pass
+        """Запускає інтегратор Сімпсона."""
+        super().__init__(func, a, b)
 
     def integrate(self, n):
         pass
