@@ -33,11 +33,11 @@ class BaseIntegrator:
         """Знаходить інтеграл із заданою точністю eps за правилом Рунге."""
         if eps <= 0:
             raise ValueError("Точність eps повинна бути додатньою.")
-        if initial_n <= 2 or initial_n % 2 != 0:
+        if initial_n < 2 or initial_n % 2 != 0:
             raise ValueError("Початкова кількість розбиттів initial_n повинна бути додатньою.")
 
         n = initial_n
-        i_h2 = self.integrate(n_next)
+        i_h = self.integrate(n)
         divisor = (2 ** self.order) - 1
 
         while True:
@@ -54,20 +54,30 @@ class BaseIntegrator:
 
     def __str__(self):
         """Повертає рядкове представлення об'єкта інтегратора."""
-        pass
+        return (
+            f"{self.method_name} на відрізку: [{self.a}, {self.b}]"
+            f"(порядок точності: {self.order})"
+        )
 
 
 class RectangleIntegrator(BaseIntegrator):
     """Обчислення інтеграла складеною формулою середніх прямокутників."""
 
-    order = None
+    order = 2
     method_name = "Формула прямокутників"
 
     def __init__(self, func, a, b):
-        pass
+        """Запускає інгератор середніх прямокутників."""
+        super().__init__(func, a, b)
 
     def integrate(self, n):
-        pass
+        """Обчислення інтеграла за формулою середніх прямокутників."""
+        if n <= 0 or n % 2 != 0:
+            raise ValueError("Кількість розбиттів n повинна бути додатньою та парною.")
+
+        h = (self.b - self.a) / n
+        total = sum(self.func(self.a + (i + 0.5) * h) for i in range(n))
+        return h * total
 
 
 class TrapezoidIntegrator(BaseIntegrator):
