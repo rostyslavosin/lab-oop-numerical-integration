@@ -1,5 +1,7 @@
 """Модуль реалізації класів чисельного інтегрування."""
 
+import math
+
 
 class BaseIntegrator:
     """Базовий клас для чисельного обчислення визначених інтегралів."""
@@ -22,7 +24,7 @@ class BaseIntegrator:
     @staticmethod
     def validate_bounds(a, b):
         """Перевіряє коректність меж інтегрування."""
-        if a >=b:
+        if a >= b:
             raise ValueError("Нижня межа a повинна бути меншою за верхню межу b.")
 
     def integrate(self, n):
@@ -32,19 +34,17 @@ class BaseIntegrator:
     def adaptive_integrate(self, eps=1e-4, initial_n=2):
         """Знаходить інтеграл із заданою точністю eps за правилом Рунге."""
         if eps <= 0:
-            raise ValueError("Точність eps повинна бути додатньою.")
+            raise ValueError("Точність eps повинна бути додатною.")
         if initial_n < 2 or initial_n % 2 != 0:
             raise ValueError("Початкова кількість розбиттів initial_n повинна бути додатньою.")
 
         n = initial_n
         i_h = self.integrate(n)
-        print(f"  n = {n:<4} -> I = {i_h:.7f}")
         divisor = (2 ** self.order) - 1
 
         while True:
-            n_next = n*2
+            n_next = n * 2
             i_h2 = self.integrate(n_next)
-            print(f"  n = {n_next:<4} -> I = {i_h2:.7f}")
             error = abs(i_h2 - i_h) / divisor
 
             if error < eps:
@@ -54,10 +54,31 @@ class BaseIntegrator:
             n = n_next
             i_h = i_h2
 
+    @classmethod
+    def check(cls, func, a, b, eps, method, initial_n=2):
+        """Приймає точність і метод, повертає кількість ітерацій та результат."""
+        methods = {
+            "1": RectangleIntegrator,
+            "2": TrapezoidIntegrator,
+            "3": SimpsonIntegrator,
+        }
+
+        choise = str(method)
+        if choise not in methods:
+            raise ValueError("Невідомий метод")
+
+        integrator_cls = methods[choise]
+        integrator = integrator_cls(func, a, b)
+        result, n_min, error = integrator.adaptive_integrate(
+            eps=eps, initial_n=initial_n
+        )
+        iterations = str(math.log2(n_min // initial_n))
+        return iterations, n_min
+
     def __str__(self):
         """Повертає рядкове представлення об'єкта інтегратора."""
         return (
-            f"{self.method_name} на відрізку: [{self.a}, {self.b}]"
+            f"{self.method_name} на відрізку: [{self.a}, {self.b}] "
             f"(порядок точності: {self.order})"
         )
 
@@ -119,6 +140,8 @@ class SimpsonIntegrator(BaseIntegrator):
             raise ValueError("Кількість розбиттів n повинна бути додатньою та парною.")
 
         h = (self.b - self.a) / n
-        odd_sum = sum(self.func(self.a + i*h) for i in range(1, n, 2))
-        even_sum = sum(self.func(self.a + i*h) for i in range(2, n-1, 2))
-        return (h/3) * (self.func(self.a) + self.func(self.b) + 4*odd_sum + 2*even_sum)
+        odd_sum = sum(self.func(self.a + i * h) for i in range(1, n, 2))
+        even_sum = sum(self.func(self.a + i * h) for i in range(2, n - 1, 2))
+        return (h / 3) * (
+            self.func(self.a) + self.func(self.b) + 4 * odd_sum + 2 * even_sum
+        )
