@@ -6,6 +6,7 @@ from integrators import (
     RectangleIntegrator,
     SimpsonIntegrator,
     TrapezoidIntegrator,
+    BaseIntegrator
 )
 
 
@@ -35,5 +36,18 @@ def main():
                 f"(n_min = {n_min}, похибка ≈ {err:.2e})\n"
             )
 
+
+def main2():
+    """Перевірка"""
+    bounds = {"a": 0.0, "b": 1.0}
+    method = input("Метод (1 - Прямокутники, 2 - Трапеції, 3 - Сімпсон): ")
+    eps = float(input("Введіть бажану точність: ").replace(",", "."))
+
+    iterations, n_min = BaseIntegrator.check(
+        target_function, bounds["a"], bounds["b"], eps, method
+    )
+
+    print(f"\nКількість ітерацій: {iterations} (n_min = {n_min})")
+
 if __name__ == "__main__":
-    main()
+    main2()
